@@ -3,36 +3,36 @@ var exec = require("cordova/exec");
 function BluetoothPrinter(){};
 
 /*
- * 设置打印机宽度
+ * Set printer width
  */
  BluetoothPrinter.prototype.setPrinterPageWidth = function(success, fail, width){
     exec(success, fail, 'MKBluetoothPrinter', 'setPrinterPageWidth',[width]);
  }
 
 /*
- * 设置(3、4列)第一列字符最大长度打印机宽度
+ * Set maximum character length for first column in 3 or 4 column layout
  */
 BluetoothPrinter.prototype.setFirstRankMaxLength = function(success, fail, text3, text4){
     exec(success, fail, 'MKBluetoothPrinter', 'setFirstRankMaxLength', [text3,text4])
 }
 
 /*
- * 获取当前设置的纸张宽度
+ * Get current paper width setting
  */
 BluetoothPrinter.prototype.getCurrentSetPageWidth = function(success, fail){
     exec(success, fail, 'MKBluetoothPrinter', 'getCurrentSetPageWidth');
 }
 
 /*
- * 自动连接 历史连接过的设备
+ * Auto-connect to previously connected devices
  */
 BluetoothPrinter.prototype.autoConnectPeripheral = function(success, fail){
     exec(success, fail, 'MKBluetoothPrinter', 'autoConnectPeripheral', []);
 }
 
 /** 
- * 是否已连接设备 
- * 返回： "1":是  "0":否
+ * Check if device is connected 
+ * Returns: "1":yes  "0":no
  */
 BluetoothPrinter.prototype.isConnectPeripheral = function(success, fail){
     exec(success, fail, 'MKBluetoothPrinter', 'isConnectPeripheral', []);
@@ -40,26 +40,26 @@ BluetoothPrinter.prototype.isConnectPeripheral = function(success, fail){
 
 
 /*
- * 开始扫描设备
- * keep：是否持续回调 （0：否， 1：是，default:0）
+ * Start scanning for devices
+ * keep: whether to keep continuous callback (0: no, 1: yes, default:0)
  *
- * 返回的设备列表json数组
+ * Returns device list as JSON array
  * [{"name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
- * 返回扫描到的外设列表信息(有可能为空)，在扫描的回调中返回，会有延时
+ * Returns scanned peripheral list information (may be empty), returned in scan callback with delay
  */
 BluetoothPrinter.prototype.scanForPeripherals = function(success, fail, keep){
     exec(success, fail, 'MKBluetoothPrinter', 'scanForPeripherals', [keep]);
 }
 
-/** 停止扫描 */
+/** Stop scanning */
 BluetoothPrinter.prototype.stopScan = function(success, fail){
     exec(success, fail, 'MKBluetoothPrinter', 'stopScan', [])
 }
 
 /**
- * 获取 外设列表
- * 调用后马上返回已经扫描到的外设列表。
- * 返回的设备列表json数组：
+ * Get peripheral list
+ * Returns immediately with already scanned peripheral list.
+ * Returns device list as JSON array:
  * [{"name":"Printer_2EC1","uuid":"9A87E98E-BE88-5BA6-2C31-ED4869300E6E"}]
  */
 BluetoothPrinter.prototype.getDeviceList = function(success, fail){
@@ -67,28 +67,28 @@ BluetoothPrinter.prototype.getDeviceList = function(success, fail){
 }
 
 /**
- * 连接外设
- * 参数:[uuid],  从已经获取到的外设列表，选择要连接的设备信息中获取UUID
- * 连接成功后，停止扫描。
+ * Connect to peripheral
+ * Parameter: [uuid], get UUID from device info you want to connect from the already obtained peripheral list
+ * After successful connection, stop scanning.
  */
 BluetoothPrinter.prototype.connectPeripheral = function(success, fail, uuid){
     exec(success, fail, 'MKBluetoothPrinter', 'connectPeripheral', [uuid]);
 }
 
 /**
- * 设置打印信息 并打印
- * 参数jsonString， json数组字符串
+ * Set print information and print
+ * Parameter jsonString, JSON array string
  */
 BluetoothPrinter.prototype.setPrinterInfoAndPrinter = function(success, fail, jsonString){
     exec(success, fail, 'MKBluetoothPrinter', 'setPrinterInfoAndPrinter', [jsonString]);
 }
 
-//断开连接
+//Disconnect
 BluetoothPrinter.prototype.stopConnection = function(success, fail){
     exec(success, fail, 'MKBluetoothPrinter', 'stopPeripheralConnection', []);
 }
 
-//在Xcode控制台打印log
+//Print log to Xcode console
 BluetoothPrinter.prototype.printOCLog = function(success, fail, message){
     exec(success, fail, 'MKBluetoothPrinter', 'printLog', [message]);
 }
@@ -98,7 +98,7 @@ BluetoothPrinter.prototype.printOCLog = function(success, fail, message){
 
 //=================================================
 //enum
-//  信息类型
+//  Information types
 if (typeof BTPInfoType == "undefined"){
     var BTPInfoType = {};
     BTPInfoType.text            = 0;
@@ -111,7 +111,7 @@ if (typeof BTPInfoType == "undefined"){
     BTPInfoType.footer          = 7;
     BTPInfoType.cutpage         = 8;
 }
-//  字号大小 default:smalle
+//  Font size default:smalle
 if (typeof BTPFontType == "undefined"){
     var BTPFontType = {};
     BTPFontType.smalle  = 0;
@@ -124,7 +124,7 @@ if (typeof BTPFontType == "undefined"){
     BTPFontType.big7     = 7;
     BTPFontType.big8     = 8;
 }
-//  对齐方式  default:center
+//  Alignment mode  default:center
 if (typeof BTPAlignmentType == "undefined"){
     var BTPAlignmentType = {};
     BTPAlignmentType.left   = 0;
@@ -138,33 +138,33 @@ if (typeof BTPAlignmentType == "undefined"){
 
 //=================================================
 //PrinterInfoHelper
-/* 所有参数
+/* All parameters
  var infoModel = new Object();
- infoModel.infoType = BTPInfoType.text;                 信息类型
- infoModel.text = text;                                 信息
- infoModel.textArray = ["铅笔刀","2.00","5","10.00"];    信息列表
- infoModel.fontType = MKBTPFontType.middle;             字号（小，中，大）
- infoModel.aligmentType = MKBTPAlignmentType.center;    对齐方式
- infoModel.maxWidth = 300;                              图片宽度
- infoModel.qrCodeSize = 12;                             二维码大小（1-16）
- infoModel.isTitle = 0;                                 是否标题
+ infoModel.infoType = BTPInfoType.text;                 // Information type
+ infoModel.text = text;                                 // Information
+ infoModel.textArray = ["Pencil sharpener","2.00","5","10.00"];    // Information list
+ infoModel.fontType = BTPFontType.middle;               // Font size (small, medium, large)
+ infoModel.aligmentType = BTPAlignmentType.center;      // Alignment mode
+ infoModel.maxWidth = 300;                              // Image width
+ infoModel.qrCodeSize = 12;                             // QR code size (1-16)
+ infoModel.isTitle = 0;                                 // Whether it's a title
  */
 
-var _printerInfos = []; //保存信息的列表
+var _printerInfos = []; //List to save information
 
 function PrinterInfoHelper(){};
 
 /*
- * 重置信息列表
+ * Reset information list
  */
 PrinterInfoHelper.prototype.resetInfos = function(){
     _printerInfos = [];
 }
 
-/* 文本信息
- * text         : 信息
- * alignment    : 对齐方式  optional   default: center
- * fontType     : 字号     optional    default: smalle
+/* Text information
+ * text         : Information
+ * alignment    : Alignment mode  optional   default: center
+ * fontType     : Font size     optional    default: smalle
  */
 PrinterInfoHelper.prototype.appendText = function (text, alignment, fontType) {
     var infoModel = new Object();
@@ -175,9 +175,9 @@ PrinterInfoHelper.prototype.appendText = function (text, alignment, fontType) {
     _printerInfos.push(infoModel);
 }
 
-/* 列表信息
- * textList     : 信息列表，
- * isTitle      : 是否标题       optional   1是，0否，  default：0
+/* List information
+ * textList     : Information list,
+ * isTitle      : Whether it's a title       optional   1=yes, 0=no,  default: 0
  */
 PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle, fontType) {
     var infoModel = new Object();
@@ -191,10 +191,10 @@ PrinterInfoHelper.prototype.appendTextList = function (textList, isTitle, fontTy
     _printerInfos.push(infoModel);
 }
 
-/* 条形码
- * text: 条形码 字符串，
- * maxWidth     : 图片宽    optional   default:300
- * alignment    : 对齐方式  optional   default:center
+/* Barcode
+ * text: Barcode string,
+ * maxWidth     : Image width    optional   default:300
+ * alignment    : Alignment mode  optional   default:center
  */
 PrinterInfoHelper.prototype.appendBarCode = function (text, maxWidth, alignment){
     var infoModel = new Object();
@@ -205,10 +205,10 @@ PrinterInfoHelper.prototype.appendBarCode = function (text, maxWidth, alignment)
     _printerInfos.push(infoModel);
 }
 
-/* 二维码
- * text: 二维码 字符串，
- * size(1-16)   : 图片大小  optional   default:12
- * alignment    : 对齐方式  optional   default:center
+/* QR Code
+ * text: QR code string,
+ * size(1-16)   : Image size  optional   default:12
+ * alignment    : Alignment mode  optional   default:center
  */
 PrinterInfoHelper.prototype.appendQrCode = function (text, size, alignment){
     var infoModel = new Object();
@@ -219,10 +219,10 @@ PrinterInfoHelper.prototype.appendQrCode = function (text, size, alignment){
     _printerInfos.push(infoModel);
 }
 
-/* 图片
- * text: image 转成的 base64 字符串，
- * maxWidth     : 图片宽    optional   default:300
- * alignment    : 对齐方式  optional   default:center
+/* Image
+ * text: base64 string converted from image,
+ * maxWidth     : Image width    optional   default:300
+ * alignment    : Alignment mode  optional   default:center
  */
 PrinterInfoHelper.prototype.appendImage = function (text, maxWidth, alignment){
     var infoModel = new Object();
@@ -233,21 +233,21 @@ PrinterInfoHelper.prototype.appendImage = function (text, maxWidth, alignment){
     _printerInfos.push(infoModel);
 }
 
-//分割线  ---------------------------
+//Separator line  ---------------------------
 PrinterInfoHelper.prototype.appendSeperatorLine = function(){
     var infoModel = new Object();
     infoModel.infoType = BTPInfoType.seperatorLine;
     _printerInfos.push(infoModel);
 }
 
-//空行
+//Empty line
 PrinterInfoHelper.prototype.appendSpaceLine = function(){
     var infoModel = new Object();
     infoModel.infoType = BTPInfoType.spaceLine;
     _printerInfos.push(infoModel);
 }
 
-//切纸
+//Cut paper
 PrinterInfoHelper.prototype.appendCutpage = function(){
     var infoModel = new Object();
     infoModel.infoType = BTPInfoType.cutpage;
@@ -261,7 +261,7 @@ PrinterInfoHelper.prototype.appendFooter = function(text){
     _printerInfos.push(infoModel);
 }
 
-// 获取打印信息的 json 字符串
+// Get print information JSON string
 PrinterInfoHelper.prototype.getPrinterInfoJsonString = function(){
     var jsonStr = JSON.stringify(_printerInfos);
     _printerInfos = [];

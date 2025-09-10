@@ -48,19 +48,25 @@
                 <param name="android-package" value="cn.sj.cordova.bluetoothprint.MKBluetoothPrinter"/>
             </feature>
         </config-file>
+        
+        <preference name="android-minSdkVersion" default="19" />
+        <preference name="android-targetSdkVersion" default="33" />
 
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.INTERNET" /> 
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> 
             <uses-permission android:name="android.permission.BLUETOOTH" /> 
+            <!-- Android 12+ (API 31+) Bluetooth permissions -->
+            <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+            <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-feature android:name="android.hardware.usb.host" android:required="false"/> 
             <uses-permission android:name="android.hardware.usb.accessory" /> 
             <uses-permission android:name="android.permission.DEVICE_POWER"/>
             <uses-permission android:name="android.permission.WAKE_LOCK"/> 
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/> 
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
-            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> 
-            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
         </config-file>
 
        

@@ -1,11 +1,12 @@
 {
-  "name": "@lynzz/cordova-plugin-bluetooth-printer",
+  "name": "@kikwaib/cordova-plugin-bluetooth-printer",
   "version": "1.0.9",
-  "description": "cordova bluetooth printer plugin",
+  "description": "Cordova Bluetooth printer plugin (fork of lynzz/BluetoothPrinter with cross-platform support)",
   "cordova": {
     "id": "cordova-plugin-bluetooth-printer",
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ]
   },
   "scripts": {
@@ -13,17 +14,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lynzz/BluetoothPrinter.git"
+    "url": "git+https://github.com/kikwaib/BluetoothPrinter.git"
   },
   "keywords": [
     "ecosystem:cordova",
     "cordova",
-    "cordova-ios"
+    "cordova-ios",
+    "cordova-android",
+    "bluetooth",
+    "printer",
+    "thermal",
+    "ESC/POS"
   ],
-  "author": "lynzz",
+  "author": "Kikwaib <kikwaib@gmail.com> (https://github.com/kikwaib)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lynzz/BluetoothPrinter/issues"
+    "url": "https://github.com/kikwaib/BluetoothPrinter/issues"
   },
-  "homepage": "https://github.com/lynzz/BluetoothPrinter#readme"
+  "homepage": "https://github.com/kikwaib/BluetoothPrinter#readme"
 }

@@ -10,18 +10,18 @@
 #define HLBLEConst_h
 
 typedef NS_ENUM(NSInteger, HLOptionStage) {
-    HLOptionStageConnection,            //蓝牙连接阶段
-    HLOptionStageSeekServices,          //搜索服务阶段
-    HLOptionStageSeekCharacteristics,   //搜索特性阶段
-    HLOptionStageSeekdescriptors,       //搜索描述信息阶段
+    HLOptionStageConnection,            //Bluetooth connection stage
+    HLOptionStageSeekServices,          //Service discovery stage
+    HLOptionStageSeekCharacteristics,   //Characteristic discovery stage
+    HLOptionStageSeekdescriptors,       //Descriptor discovery stage
 };
 
-#pragma mark ------------------- 通知的定义 --------------------------
-/** 蓝牙状态改变的通知 */
+#pragma mark ------------------- Notification definitions --------------------------
+/** Bluetooth state change notification */
 #define kCentralManagerStateUpdateNoticiation @"kCentralManagerStateUpdateNoticiation"
 
-#pragma mark ------------------- block的定义 --------------------------
-/** 蓝牙状态改变的block */
+#pragma mark ------------------- Block definitions --------------------------
+/** Bluetooth state change block */
 typedef void(^HLStateUpdateBlock)(CBCentralManager *central);
 
 /** 发现一个蓝牙外设的block */

@@ -16,14 +16,14 @@ typedef NS_ENUM(NSInteger, HLPrinterStyle) {
     HLPrinterStyleCustom
 };
 
-/** 文字对齐方式 */
+/** Text alignment modes */
 typedef NS_ENUM(NSInteger, HLTextAlignment) {
     HLTextAlignmentLeft = 0x00,
     HLTextAlignmentCenter = 0x01,
     HLTextAlignmentRight = 0x02
 };
 
-/** 字号 */
+/** Font sizes */
 typedef NS_ENUM(NSInteger, HLFontSize) {
     HLFontSizeTitleSmalle = 0x00,
     HLFontSizeTitleMiddle = 0x11,

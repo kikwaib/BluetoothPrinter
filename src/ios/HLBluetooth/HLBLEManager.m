@@ -8,21 +8,21 @@
 
 #import "HLBLEManager.h"
 
-// 发送数据时，需要分段的长度，部分打印机一次发送数据过长就会乱码，需要分段发送。这个长度值不同的打印机可能不一样，你需要调试设置一个合适的值（最好是偶数）
+// When sending data, segmentation length is needed. Some printers will produce garbled characters if data sent at once is too long, requiring segmented transmission. This length value may vary for different printers, you need to debug and set an appropriate value (preferably an even number)
 #define kLimitLength    146
 
 @interface HLBLEManager ()<CBCentralManagerDelegate,CBPeripheralDelegate>
 
-@property (strong, nonatomic) CBCentralManager  *centralManager;        /**< 中心管理器 */
-@property (strong, nonatomic) CBPeripheral      *connectedPerpheral;    /**< 当前连接的外设 */
+@property (strong, nonatomic) CBCentralManager  *centralManager;        /**< Central manager */
+@property (strong, nonatomic) CBPeripheral      *connectedPerpheral;    /**< Currently connected peripheral */
 
-@property (strong, nonatomic) NSArray<CBUUID *> *serviceUUIDs;          /**< 要查找服务的UUIDs */
-@property (strong, nonatomic) NSArray<CBUUID *> *characteristicUUIDs;   /**< 要查找特性的UUIDs */
+@property (strong, nonatomic) NSArray<CBUUID *> *serviceUUIDs;          /**< UUIDs of services to search for */
+@property (strong, nonatomic) NSArray<CBUUID *> *characteristicUUIDs;   /**< UUIDs of characteristics to search for */
 
-@property (assign, nonatomic) BOOL              stopScanAfterConnected;  /**< 是否连接成功后停止扫描蓝牙设备 */
+@property (assign, nonatomic) BOOL              stopScanAfterConnected;  /**< Whether to stop scanning Bluetooth devices after successful connection */
 
-@property (assign, nonatomic) NSInteger         writeCount;         /**< 写入次数 */
-@property (assign, nonatomic) NSInteger         responseCount;      /**< 返回次数 */
+@property (assign, nonatomic) NSInteger         writeCount;         /**< Write count */
+@property (assign, nonatomic) NSInteger         responseCount;      /**< Response count */
 
 @end
 
@@ -38,7 +38,7 @@ static HLBLEManager *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [super init];
-        //蓝牙没打开时alert提示框
+        //Alert dialog when Bluetooth is not enabled
         NSDictionary *options = @{CBCentralManagerOptionShowPowerAlertKey:@(YES)};
         _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue() options:options];
         _limitLength = kLimitLength;
@@ -55,7 +55,7 @@ static HLBLEManager *instance = nil;
     return instance;
 }
 
-/** 开始搜索蓝牙外设，每次在block中返回一个蓝牙外设信息 */
+/** Start searching for Bluetooth peripherals, returning one Bluetooth peripheral info in block each time */
 - (void)scanForPeripheralsWithServiceUUIDs:(NSArray<CBUUID *> *)uuids options:(NSDictionary<NSString *, id> *)options{
     [_centralManager scanForPeripheralsWithServices:uuids options:options];
 }
@@ -66,7 +66,7 @@ static HLBLEManager *instance = nil;
 }
 
 
-/** 连接某个蓝牙外设，并查询服务，特性，特性描述 */
+/** Connect to a Bluetooth peripheral and query services, characteristics, and characteristic descriptors */
 - (void)connectPeripheral:(CBPeripheral *)peripheral
            connectOptions:(NSDictionary<NSString *,id> *)connectOptions
    stopScanAfterConnected:(BOOL)stop
@@ -74,31 +74,31 @@ static HLBLEManager *instance = nil;
    characteristicsOptions:(NSArray<CBUUID *> *)characteristicUUIDs
             completeBlock:(HLBLECompletionBlock)completionBlock{
     
-    //1.保存回调的block以及参数
+    //1. Save callback block and parameters
     _completionBlock = completionBlock;
     _serviceUUIDs = serviceUUIDs;
     _characteristicUUIDs = characteristicUUIDs;
     _stopScanAfterConnected = stop;
     
-    //2.先取消之前连接的蓝牙外设
+    //2. First cancel previously connected Bluetooth peripheral
     if (_connectedPerpheral) {
         [_centralManager cancelPeripheralConnection:_connectedPerpheral];
     }
     
-    //3.开始连接新的蓝牙外设
+    //3. Start connecting to new Bluetooth peripheral
     [_centralManager connectPeripheral:peripheral options:connectOptions];
-    //4.设置代理
+    //4. Set delegate
     peripheral.delegate = self;
 }
 
 
-/** 查找某个服务的子服务 */
+/** Find sub-services of a service */
 - (void)discoverIncludedServices:(NSArray<CBUUID *> *)includedServiceUUIDs forService:(CBService *)service{
     [_connectedPerpheral discoverIncludedServices:includedServiceUUIDs forService:service];
 }
 
 #pragma mark - ***** 特性 *****
-/** 读取某个特性的值 */
+/** Read value of a characteristic */
 - (void)readValueForCharacteristic:(CBCharacteristic *)characteristic{
     [_connectedPerpheral readValueForCharacteristic:characteristic];
 }
@@ -108,7 +108,7 @@ static HLBLEManager *instance = nil;
     [self readValueForCharacteristic:characteristic];
 }
 
-/** 往某个特性中写入数据 */
+/** Write data to a characteristic */
 - (void)writeValue:(NSData *)data forCharacteristic:(CBCharacteristic *)characteristic type:(CBCharacteristicWriteType)type{
     _writeCount = 0;
     _responseCount = 0;
@@ -149,7 +149,7 @@ static HLBLEManager *instance = nil;
 
 
 #pragma mark - ***** 描述 *****
-/** 读取某特性的描述信息 */
+/** Read descriptor information of a characteristic */
 - (void)readValueForDescriptor:(CBDescriptor *)descriptor{
     [_connectedPerpheral readValueForDescriptor:descriptor];
 }
@@ -159,7 +159,7 @@ static HLBLEManager *instance = nil;
     [self readValueForDescriptor:descriptor];
 }
 
-/** 将数据写入特性的描述中 */
+/** Write data to characteristic descriptor */
 - (void)writeValue:(NSData *)data forDescriptor:(CBDescriptor *)descriptor{
     [_connectedPerpheral writeValue:data forDescriptor:descriptor];
 }
@@ -170,20 +170,20 @@ static HLBLEManager *instance = nil;
 }
 
 
-/** 获取某外设的信号 */
+/** Get signal strength of a peripheral */
 - (void)readRSSICompletionBlock:(HLGetRSSIBlock)getRSSIBlock{
     _getRSSIBlock = getRSSIBlock;
     [_connectedPerpheral readRSSI];
 }
 
 
-/** 停止扫描 */
+/** Stop scanning */
 - (void)stopScan{
     [_centralManager stopScan];
     _discoverPeripheralBlcok = nil;
 }
 
-/** 断开蓝牙连接 */
+/** Disconnect Bluetooth connection */
 - (void)cancelPeripheralConnection{
     if (_connectedPerpheral) {
         [_centralManager cancelPeripheralConnection:_connectedPerpheral];
@@ -239,10 +239,10 @@ static HLBLEManager *instance = nil;
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(nullable NSError *)error{
     _connectedPerpheral = nil;
-    NSLog(@"断开连接了，断开连接了 %@",error);
+    NSLog(@"Disconnected, disconnected %@",error);
 }
 
-#pragma mark ---------------- 发现服务的代理 -----------------
+#pragma mark ---------------- Service discovery delegate -----------------
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(nullable NSError *)error{
     if (error) {
         if (_completionBlock) {
@@ -273,7 +273,7 @@ static HLBLEManager *instance = nil;
     }
 }
 
-#pragma mark ---------------- 服务特性的代理 --------------------
+#pragma mark ---------------- Service characteristics delegate --------------------
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(nullable NSError *)error{
     if (error) {
         if (_completionBlock) {
@@ -309,7 +309,7 @@ static HLBLEManager *instance = nil;
     }
 }
 
-// 读取特性中的值
+// Read value from characteristic
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     if (error) {
         if (_valueForCharacteristicBlock) {
@@ -333,7 +333,7 @@ static HLBLEManager *instance = nil;
     }
 }
 
-#pragma mark ---------------- 发现服务特性描述的代理 ------------------
+#pragma mark ---------------- Service characteristic descriptor discovery delegate ------------------
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(nullable NSError *)error{
     if (error) {
         if (_completionBlock) {
@@ -374,7 +374,7 @@ static HLBLEManager *instance = nil;
     }
 }
 
-#pragma mark ---------------- 写入数据的回调 --------------------
+#pragma mark ---------------- Write data callback --------------------
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(nullable NSError *)error{
     if (!_writeToCharacteristicBlock) {
         return;
@@ -388,7 +388,7 @@ static HLBLEManager *instance = nil;
     _writeToCharacteristicBlock(characteristic,error);
 }
 
-#pragma mark ---------------- 获取信号之后的回调 ------------------
+#pragma mark ---------------- Signal strength callback ------------------
 # if  __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(nullable NSError *)error {
     if (_getRSSIBlock) {

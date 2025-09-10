@@ -23,7 +23,7 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
 
 @interface HLPrinter ()
 
-/** 将要打印的排版后的数据 */
+/** Data to be printed after formatting */
 @property (strong, nonatomic) NSMutableData *printerData;
 @property (strong, nonatomic) MKPageWidthConfig *config;
 
@@ -31,7 +31,7 @@ static NSString * const kUD_maxLength4Text = @"kUD_maxLength4Text";
 
 @implementation HLPrinter
 
-/** 单例 */
+/** Singleton */
 static HLPrinter *sharedInstance = nil;
 + (instancetype)sharedInstance {
     static dispatch_once_t once;
@@ -52,14 +52,14 @@ static HLPrinter *sharedInstance = nil;
 - (void)defaultSetting{
     _printerData = [[NSMutableData alloc] init];
     
-    // 1.初始化打印机
+    // 1. Initialize printer
     Byte initBytes[] = {0x1B,0x40};
     [_printerData appendBytes:initBytes length:sizeof(initBytes)];
-    // 2.设置行间距为1/6英寸，约34个点
-    // 另一种设置行间距的方法看这个 @link{-setLineSpace:}
+    // 2. Set line spacing to 1/6 inch, about 34 dots
+    // Another way to set line spacing see @link{-setLineSpace:}
     Byte lineSpace[] = {0x1B,0x32};
     [_printerData appendBytes:lineSpace length:sizeof(lineSpace)];
-    // 3.设置字体:标准0x00，压缩0x01;
+    // 3. Set font: standard 0x00, compressed 0x01;
     Byte fontBytes[] = {0x1B,0x4D,0x00};
     [_printerData appendBytes:fontBytes length:sizeof(fontBytes)];
     
@@ -251,14 +251,14 @@ static HLPrinter *sharedInstance = nil;
 }
 
 /**
- *  将二维码数据存储到符号存储区
- * [范围]:  4≤(pL+pH×256)≤7092 (0≤pL≤255,0≤pH≤27) 
+ *  Store QR code data to symbol storage area
+ * [Range]:  4≤(pL+pH×256)≤7092 (0≤pL≤255,0≤pH≤27) 
  * cn=49  
  * fn=80  
  * m=48
- * k=(pL+pH×256)-3, k就是数据的长度
+ * k=(pL+pH×256)-3, k is the length of data
  *
- *  @param info 二维码数据
+ *  @param info QR code data
  */
 - (void)setQRCodeInfo:(NSString *)info{
     NSInteger kLength = info.length + 3;
@@ -543,7 +543,7 @@ static HLPrinter *sharedInstance = nil;
 
 - (void)appendFooter:(NSString *)footerInfo{
     if (!footerInfo || footerInfo.length == 0) {
-//        footerInfo = @"谢谢惠顾，欢迎下次光临！";
+//        footerInfo = @"Thank you for your patronage, welcome next time!";
         return;
     }
     [self appendSeperatorLine];
